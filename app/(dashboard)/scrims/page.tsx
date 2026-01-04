@@ -1,5 +1,5 @@
-const page = () => {
+const ScrimsListPage = () => {
   return <div>page</div>;
 };
 
-export default page;
+export default ScrimsListPage;

@@ -30,7 +30,7 @@ export default async function DashboardLayout({
         <main className="flex-1 overflow-y-auto p-6">{children}</main>
 
         {/* Sidebar (future: friends, profiles) */}
-        <aside className="w-90 border-l p-4 hidden lg:block">
+        <aside className="w-96 border-l p-4 hidden lg:block">
           <div className="text-sm text-gray-500">
             Friends & profile
             <br />

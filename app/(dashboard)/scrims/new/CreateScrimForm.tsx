@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { createScrimAction } from "@/app/actions/create_scrim";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 
 type Team = {
   id: string;
@@ -30,6 +30,8 @@ export default function CreateScrimForm({ teams }: { teams: Team[] }) {
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const router = useRouter();
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
