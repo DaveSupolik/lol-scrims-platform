@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createScrimAction } from "@/app/actions/create_scrim";
+import { useRouter } from "next/navigation";
 
 type Team = {
   id: string;
@@ -30,6 +31,8 @@ export default function CreateScrimForm({ teams }: { teams: Team[] }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const router = useRouter();
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
@@ -54,7 +57,7 @@ export default function CreateScrimForm({ teams }: { teams: Team[] }) {
       );
 
       // redirect or simple success
-      window.location.href = "/scrims";
+      router.replace("/scrims");
     } catch (err: any) {
       setError(err.message);
     } finally {
