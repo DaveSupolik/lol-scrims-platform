@@ -1,25 +1,13 @@
 import { createServerSupabaseClient } from "@/app/lib/supabase/server";
 import CreateScrimForm from "./CreateScrimForm";
-import { redirect } from "next/navigation";
 
 type TeamJoinRow = {
   team_id: string;
-  team: {
-    name: string;
-  }[];
+  team: { name: string }[] | null;
 };
 
 export default async function NewScrimPage() {
   const supabase = await createServerSupabaseClient();
-
-  // 🔐 Auth guard
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/login");
-  }
 
   // 👥 Load managed teams
   const { data: teamRows, error } = await supabase
@@ -35,7 +23,7 @@ export default async function NewScrimPage() {
 
   const managedTeams = (teamRows as TeamJoinRow[]).map((t) => ({
     id: t.team_id,
-    name: t.team[0]?.name ?? "Unknown team",
+    name: t.team?.[0]?.name ?? "Unknown team",
   }));
 
   return (

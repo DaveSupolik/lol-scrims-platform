@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createBrowserSupabaseClient } from "@/app/lib/supabase/client";
+import router from "next/router";
 
 export default function LoginPage() {
   const supabase = createBrowserSupabaseClient();
@@ -22,7 +23,7 @@ export default function LoginPage() {
     if (error) {
       setError(error.message);
     } else {
-      window.location.href = "/";
+      router.replace("/");
     }
   }
 
