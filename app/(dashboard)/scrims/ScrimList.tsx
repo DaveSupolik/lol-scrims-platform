@@ -19,7 +19,8 @@ export default function ScrimList() {
   // Read filters from URL
   const region = searchParams.get("region") ?? undefined;
   const tierParam = searchParams.get("tier");
-  const tier = tierParam ? parseInt(tierParam) : undefined;
+  const parsedTier = tierParam ? Number(tierParam) : undefined;
+  const tier = Number.isFinite(parsedTier) ? parsedTier : undefined;
 
   const handleRegionChange = (newRegion?: string) => {
     const params = new URLSearchParams(searchParams);
@@ -46,18 +47,24 @@ export default function ScrimList() {
     setLoading(true);
     if (reset) {
       setScrims([]);
+      setCursor(undefined);
+      setHasMore(true);
     }
     const limit = 10;
-    const data = await loadScrims({
-      region,
-      tier,
-      cursor: reset ? undefined : cursor,
-      limit,
-    });
-    setScrims((prev) => (reset ? data : [...prev, ...data]));
-    setCursor(data.at(-1)?.scheduled_at);
-    setHasMore(data.length === limit);
-    setLoading(false);
+    try {
+      const data = await loadScrims({
+        region,
+        tier,
+        cursor: reset ? undefined : cursor,
+        limit,
+      });
+
+      setScrims((prev) => (reset ? data : [...prev, ...data]));
+      setCursor(data.at(-1)?.scheduled_at);
+      setHasMore(data.length === limit);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {

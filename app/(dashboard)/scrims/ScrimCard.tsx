@@ -5,7 +5,7 @@ export function ScrimCard({ scrim }: { scrim: ScrimRow }) {
   return (
     <div className="border rounded p-4 space-y-1">
       <div className="font-semibold">
-        {scrim.creator_team[0]?.name ?? "Unknown team"}
+        {scrim.creator_team?.name ?? "Unknown team"}
       </div>
 
       <div className="text-sm text-gray-600">

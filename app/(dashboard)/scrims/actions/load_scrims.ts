@@ -10,7 +10,7 @@ export type ScrimRow = {
   creator_team: {
     id: string;
     name: string;
-  }[];
+  } | null;
 };
 
 type LoadScrimsParams = {
@@ -39,6 +39,19 @@ const VALID_REGIONS = [
   "JP",
 ];
 
+// Internal type matching Supabase response
+type SupabaseScrimRow = {
+  id: string;
+  scheduled_at: string;
+  region: string;
+  tier_min: number;
+  tier_max: number;
+  creator_team: {
+    id: string;
+    name: string;
+  }[];
+};
+
 export async function loadScrims({
   region,
   tier,
@@ -56,13 +69,24 @@ export async function loadScrims({
   }
 
   // Validate tier if provided (assuming tiers 1-10)
-  if (tier !== undefined && (tier < 1 || tier > 10)) {
-    throw new Error("Invalid tier");
+  if (tier !== undefined) {
+    if (typeof tier !== "number" || isNaN(tier) || !Number.isFinite(tier)) {
+      throw new Error("Invalid tier: must be a valid number");
+    }
+    if (tier < 1 || tier > 10) {
+      throw new Error("Invalid tier: must be between 1 and 10");
+    }
   }
 
   // Validate cursor format (should be ISO timestamp)
-  if (cursor && isNaN(Date.parse(cursor))) {
-    throw new Error("Invalid cursor format");
+  if (cursor) {
+    if (typeof cursor !== "string") {
+      throw new Error("Invalid cursor: must be a string");
+    }
+    const parsedDate = Date.parse(cursor);
+    if (isNaN(parsedDate)) {
+      throw new Error("Invalid cursor: must be a valid ISO timestamp");
+    }
   }
 
   let query = supabase
@@ -102,5 +126,9 @@ export async function loadScrims({
     throw new Error(error.message);
   }
 
-  return data as ScrimRow[];
+  // Transform array to single object or null
+  return (data as SupabaseScrimRow[]).map((scrim) => ({
+    ...scrim,
+    creator_team: scrim.creator_team[0] ?? null,
+  })) as ScrimRow[];
 }
